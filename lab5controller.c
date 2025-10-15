@@ -221,18 +221,18 @@ if (strcmp(input, "display") == 0) {
 }
 // Help and Quit
 void printHelp() {
- printf("Lab 4 Vector Program Help\n");
- printf("========================\n");
- printf("Usage: ./lab5main [-h]\n");
- printf("Commands:\n");
- printf(" a = x y z → define vector a\n");
- printf(" a = a + b → add vectors\n");
- printf(" a = a - b → subtract vectors\n");
- printf(" a = a * scalar → multiply by scalar\n");
- printf(" display → list all vectors\n");
- printf(" clear → clear all\n");
- printf(" quit → exit program\n");
+    printf("Lab 4 Vector Program Help\n");
+    printf("========================\n");
+    printf("Usage: ./lab5main [-h]\n");
+    printf("Commands:\n");
+    printf(" a = x y z → define vector a\n");
+    printf(" a = a + b → add vectors\n");
+    printf(" a = a - b → subtract vectors\n");
+    printf(" a = a * scalar → multiply by scalar\n");
+    printf(" display → list all vectors\n");
+    printf(" clear → clear all\n");
+    printf(" quit → exit program\n");
 }
 void quitProgram(){
- exit(0);
+    exit(0);
 }
