@@ -13,8 +13,25 @@ typedef struct {
     double xMag; //X Val
     double yMag; //Y Val
     double zMag; //Z Val
-    char Name[64];
+    char Name[20];
 } Vector;
+
+// storage
+extern Vector *vectorStorage;
+extern int vectorCount;
+extern int vectorCapacity;
+
+
+// memory management
+void expandVectorStorage(void);
+void clearArray(void);
+void quitProgram(void):
+
+//csv
+int loadVectorsFromCSV(const char *filename);
+int saveVectorsToCSV(const char *filename);
+
+// lab 5 functions
 int getCommandCode();
 void printHelp();
 extern int currentCommand;
@@ -25,6 +42,7 @@ void helpFunction();
 void parseTest();
 extern char charNames[100];
 extern char userInput[100];
+
 //Vector vectorList[10]; // Vector Storage Array
 void displayVector(); //display specific vector if possible
 void clearArray(); // Clear the vector storage array

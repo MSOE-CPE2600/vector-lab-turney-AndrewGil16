@@ -10,29 +10,66 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define MAX_VECTORS 10
-static Vector vectorStorage[MAX_VECTORS];
-static int vectorCount = 0;
+Vector *vectorStorage = NULL;
+int vectorCount = 0;
+int vectorCapacity = 0;
+
+
+//memory management
+void expandVectorStorage(void){
+    int newCap = (vectorCapacity == 0) ? 4 : vectorCapacity * 2;
+    Vector *temp = realloc(vectorStorage, newCap * sizeof(Vector));
+    if(!temp){
+        printf(stderr, "Error: memory allocation failed.\n");
+        exit(EXIT_FAILURE);
+    }
+    vectorStorage = temp;
+    vectorCapacity = newCap;
+}
+
+void clearArray(void){
+    free(vectorStorage);
+    vectorStorage = NULL;
+    vectorCount = 0;
+    vectorCapacity = 0;
+}
+
+void cleanupMemory(void){
+    clearArray();
+}
+
+void quitProgram(void){
+    cleanupMemory();
+    exit(0);
+}
 int currentCommand = 0;
+int running = 1;
 char userInput[100];
-char* trim(char* s) {
+char charNames[100];
+
+
+//helpers
+static char* trim(char* s) {
     if (!s) return s;
     while (isspace((unsigned char)*s)) s++;
     char *end = s + strlen(s) - 1;
     while (end > s && isspace((unsigned char)*end)) *end-- = '\0';
     return s;
 }
-int findVectorIndexByName(const char* name) {
+
+static int findVectorIndexByName(const char* name) {
     if (!name) return -1;
     for (int i = 0; i < vectorCount; i++)
     if (strcmp(vectorStorage[i].Name, name) == 0)
     return i;
     return -1;
 }
+
+
 // Vector Operations
 Vector add(const char *expr) {
     Vector a = {0}, b = {0}, result = {0};
-    char buffer[100];
+    char buffer[128];
     strncpy(buffer, expr, sizeof(buffer));
     buffer[sizeof(buffer)-1] = '\0';
     char *first = strtok(buffer, "+");
@@ -40,24 +77,25 @@ Vector add(const char *expr) {
     if (!first || !second) return result;
     first = trim(first);
     second = trim(second);
+
     int foundA = 0, foundB = 0;
     for (int i = 0; i < vectorCount; i++) {
-        if (strcmp(vectorStorage[i].Name, first) == 0) {
+        if (!foundA && strcmp(vectorStorage.[i].Name, first == 0) {
         a = vectorStorage[i]; foundA = 1;
         }
-    if (strcmp(vectorStorage[i].Name, second) == 0) {
+    if (!foundB && strcmp(vectorStorage.[i].Name, second) == 0) {
         b = vectorStorage[i]; foundB = 1;
         }
     }
-if (!foundA || !foundB) return result;
-result.xMag = a.xMag + b.xMag;
-result.yMag = a.yMag + b.yMag;
-result.zMag = a.zMag + b.zMag;
-return result;
+    if (!foundA || !foundB) return result;
+    result.xMag = a.xMag + b.xMag;
+    result.yMag = a.yMag + b.yMag;
+    result.zMag = a.zMag + b.zMag;
+    return result;
 }
 Vector subtract(const char *expr) {
     Vector a = {0}, b = {0}, result = {0};
-    char buffer[100];
+    char buffer[128 ];
     strncpy(buffer, expr, sizeof(buffer));
     buffer[sizeof(buffer)-1] = '\0';
     char *first = strtok(buffer, "-");
@@ -66,11 +104,12 @@ Vector subtract(const char *expr) {
     first = trim(first);
     second = trim(second);
     int foundA = 0, foundB = 0;
+
     for (int i = 0; i < vectorCount; i++) {
-        if (strcmp(vectorStorage[i].Name, first) == 0) {
+        if (!foundA && strcmp(vectorStorage.[i].Name, first == 0) {
         a = vectorStorage[i]; foundA = 1;
         }
-    if (strcmp(vectorStorage[i].Name, second) == 0) {
+    if (!foundB && strcmp(vectorStorage.[i].Name, second) == 0) {
         b = vectorStorage[i]; foundB = 1;
         }
     }
@@ -80,6 +119,8 @@ Vector subtract(const char *expr) {
     result.zMag = a.zMag - b.zMag;
     return result;
 }
+
+
 Vector multiplyScalar(const char *expr) {
     Vector v = {0}, result = {0};
     char buffer[100];
@@ -98,27 +139,29 @@ Vector multiplyScalar(const char *expr) {
         break;
         }
     }
-if (!found) return result;
- double scalar = atof(second);
- result.xMag = v.xMag * scalar;
- result.yMag = v.yMag * scalar;
- result.zMag = v.zMag * scalar;
- return result;
+    if (!found) return result;
+    double scalar = atof(second);
+    result.xMag = v.xMag * scalar;
+    result.yMag = v.yMag * scalar;
+    result.zMag = v.zMag * scalar;
+    return result;
 }
 // Vector display
 void displayVector(){
- printf("\n%-10s %-10s %-10s %-10s\n", "Name", "X", "Y", "Z");
- printf("-----------------------------------------\n");
- for (int i = 0; i < vectorCount; i++) {
- printf("%-10s %-10.2f %-10.2f %-10.2f\n",
- vectorStorage[i].Name,
- vectorStorage[i].xMag,
- vectorStorage[i].yMag,
- vectorStorage[i].zMag);
- }
- 
- printf("-----------------------------------------\n\n");
+    printf("\n%-10s %-10s %-10s %-10s\n", "Name", "X", "Y", "Z");
+    printf("-----------------------------------------\n");
+    for (int i = 0; i < vectorCount; i++) {
+        printf("%-10s %-10.2f %-10.2f %-10.2f\n",
+            vectorStorage[i].Name,
+            vectorStorage[i].xMag,
+            vectorStorage[i].yMag,
+            vectorStorage[i].zMag);
+    }
+    printf("-----------------------------------------\n\n");
 }
+
+
+
 void clearArray(){
     for (int i = 0; i < MAX_VECTORS; i++) {
     vectorStorage[i].xMag = 0.0;
@@ -232,7 +275,4 @@ void printHelp() {
     printf(" display → list all vectors\n");
     printf(" clear → clear all\n");
     printf(" quit → exit program\n");
-}
-void quitProgram(){
-    exit(0);
 }
