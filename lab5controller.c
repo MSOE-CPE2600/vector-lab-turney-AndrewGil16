@@ -1,72 +1,72 @@
+
 /**
  * Author: Andrew Gilpatrick
- * Assignment: Lab 4
- * Date: 09/30/2025
+ * Assignment: Lab 7
+ * Date: 10/27/2025
  * lab5controller.c
  * Compile: make
  */
 #include <stdio.h>
-#include "vector.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "vector.h"
+
+
 Vector *vectorStorage = NULL;
 int vectorCount = 0;
 int vectorCapacity = 0;
 
-
-//memory management
-void expandVectorStorage(void){
+// ================= Memory Management =================
+void expandVectorStorage(void) {
     int newCap = (vectorCapacity == 0) ? 4 : vectorCapacity * 2;
     Vector *temp = realloc(vectorStorage, newCap * sizeof(Vector));
-    if(!temp){
-        printf(stderr, "Error: memory allocation failed.\n");
+    if (!temp) {
+        fprintf(stderr, "Error: memory allocation failed.\n");
         exit(EXIT_FAILURE);
     }
     vectorStorage = temp;
     vectorCapacity = newCap;
 }
 
-void clearArray(void){
+void clearArray(void) {
     free(vectorStorage);
     vectorStorage = NULL;
     vectorCount = 0;
     vectorCapacity = 0;
 }
 
-void cleanupMemory(void){
+void cleanupMemory(void) {
     clearArray();
 }
 
-void quitProgram(void){
+void quitProgram(void) {
     cleanupMemory();
     exit(0);
 }
 int currentCommand = 0;
 int running = 1;
 char userInput[100];
-char charNames[100];
+char charNames[100]; 
 
-
-//helpers
+//Helpers
 static char* trim(char* s) {
     if (!s) return s;
     while (isspace((unsigned char)*s)) s++;
     char *end = s + strlen(s) - 1;
-    while (end > s && isspace((unsigned char)*end)) *end-- = '\0';
+    while (end >= s && isspace((unsigned char)*end)) *end-- = '\0';
     return s;
 }
 
 static int findVectorIndexByName(const char* name) {
     if (!name) return -1;
-    for (int i = 0; i < vectorCount; i++)
-    if (strcmp(vectorStorage[i].Name, name) == 0)
-    return i;
+    for (int i = 0; i < vectorCount; i++) {
+        if (strcmp(vectorStorage[i].Name, name) == 0) return i;
+    }
     return -1;
 }
 
-
-// Vector Operations
+//operations
 Vector add(const char *expr) {
     Vector a = {0}, b = {0}, result = {0};
     char buffer[128];
@@ -80,12 +80,8 @@ Vector add(const char *expr) {
 
     int foundA = 0, foundB = 0;
     for (int i = 0; i < vectorCount; i++) {
-        if (!foundA && strcmp(vectorStorage.[i].Name, first == 0) {
-        a = vectorStorage[i]; foundA = 1;
-        }
-    if (!foundB && strcmp(vectorStorage.[i].Name, second) == 0) {
-        b = vectorStorage[i]; foundB = 1;
-        }
+        if (!foundA && strcmp(vectorStorage[i].Name, first) == 0) { a = vectorStorage[i]; foundA = 1; }
+        if (!foundB && strcmp(vectorStorage[i].Name, second) == 0) { b = vectorStorage[i]; foundB = 1; }
     }
     if (!foundA || !foundB) return result;
     result.xMag = a.xMag + b.xMag;
@@ -93,9 +89,10 @@ Vector add(const char *expr) {
     result.zMag = a.zMag + b.zMag;
     return result;
 }
+
 Vector subtract(const char *expr) {
     Vector a = {0}, b = {0}, result = {0};
-    char buffer[128 ];
+    char buffer[128];
     strncpy(buffer, expr, sizeof(buffer));
     buffer[sizeof(buffer)-1] = '\0';
     char *first = strtok(buffer, "-");
@@ -103,15 +100,11 @@ Vector subtract(const char *expr) {
     if (!first || !second) return result;
     first = trim(first);
     second = trim(second);
-    int foundA = 0, foundB = 0;
 
+    int foundA = 0, foundB = 0;
     for (int i = 0; i < vectorCount; i++) {
-        if (!foundA && strcmp(vectorStorage.[i].Name, first == 0) {
-        a = vectorStorage[i]; foundA = 1;
-        }
-    if (!foundB && strcmp(vectorStorage.[i].Name, second) == 0) {
-        b = vectorStorage[i]; foundB = 1;
-        }
+        if (!foundA && strcmp(vectorStorage[i].Name, first) == 0) { a = vectorStorage[i]; foundA = 1; }
+        if (!foundB && strcmp(vectorStorage[i].Name, second) == 0) { b = vectorStorage[i]; foundB = 1; }
     }
     if (!foundA || !foundB) return result;
     result.xMag = a.xMag - b.xMag;
@@ -120,10 +113,9 @@ Vector subtract(const char *expr) {
     return result;
 }
 
-
 Vector multiplyScalar(const char *expr) {
     Vector v = {0}, result = {0};
-    char buffer[100];
+    char buffer[128];
     strncpy(buffer, expr, sizeof(buffer));
     buffer[sizeof(buffer)-1] = '\0';
     char *first = strtok(buffer, "*");
@@ -131,13 +123,10 @@ Vector multiplyScalar(const char *expr) {
     if (!first || !second) return result;
     first = trim(first);
     second = trim(second);
+
     int found = 0;
     for (int i = 0; i < vectorCount; i++) {
-    if (strcmp(vectorStorage[i].Name, first) == 0) {
-        v = vectorStorage[i];
-        found = 1;
-        break;
-        }
+        if (strcmp(vectorStorage[i].Name, first) == 0) { v = vectorStorage[i]; found = 1; break; }
     }
     if (!found) return result;
     double scalar = atof(second);
@@ -146,133 +135,198 @@ Vector multiplyScalar(const char *expr) {
     result.zMag = v.zMag * scalar;
     return result;
 }
-// Vector display
-void displayVector(){
+
+// display and storage
+void displayVector(void){
     printf("\n%-10s %-10s %-10s %-10s\n", "Name", "X", "Y", "Z");
     printf("-----------------------------------------\n");
     for (int i = 0; i < vectorCount; i++) {
         printf("%-10s %-10.2f %-10.2f %-10.2f\n",
-            vectorStorage[i].Name,
-            vectorStorage[i].xMag,
-            vectorStorage[i].yMag,
-            vectorStorage[i].zMag);
+               vectorStorage[i].Name,
+               vectorStorage[i].xMag,
+               vectorStorage[i].yMag,
+               vectorStorage[i].zMag);
     }
     printf("-----------------------------------------\n\n");
 }
 
-
-
-void clearArray(){
-    for (int i = 0; i < MAX_VECTORS; i++) {
-    vectorStorage[i].xMag = 0.0;
-    vectorStorage[i].yMag = 0.0;
-    vectorStorage[i].zMag = 0.0;
-    strcpy(vectorStorage[i].Name, "");
-    }
-    vectorCount = 0;
-    printf("All stored vectors have been cleared!!.\n");
-}
-void newVector() {
+void newVector(void) {
     userInput[strcspn(userInput, "\n")] = '\0';
-    char *name = strtok(userInput, "=");
-    char *values = strtok(NULL, "=");
-    if (!name || !values) return;
+    char *name = trim(strtok(userInput, "="));
+    char *values = trim(strtok(NULL, ""));
+    if (!name || !values) { printf("Error: format is a = x y z\n"); return; }
 
-    name = trim(name);
-    values = trim(values);
     double vals[3];
     int count = 0;
-    char *tok = strtok(values, " ,");
-    while (tok && count < 3) {
-    vals[count++] = atof(tok);
-    tok = strtok(NULL, " ,");
+    for (char *tok = strtok(values, " ,"); tok && count < 3; tok = strtok(NULL, " ,")) {
+        vals[count++] = atof(tok);
     }
+    if (count != 3) { printf("Error: provide 3 numeric values for the vector.\n"); return; }
 
-    if (count != 3) {
-    printf("Error: provide 3 numeric values for the vector.\n");
-    return;
+    Vector v = { .xMag=vals[0], .yMag=vals[1], .zMag=vals[2] };
+    strncpy(v.Name, name, sizeof(v.Name)-1);
+    v.Name[sizeof(v.Name)-1] = '\0';
+
+    int idx = findVectorIndexByName(v.Name);
+    if (idx >= 0) {
+        vectorStorage[idx] = v;
+    } else {
+        if (vectorCount >= vectorCapacity) expandVectorStorage();
+        vectorStorage[vectorCount++] = v;
     }
-
-    Vector v = {vals[0], vals[1], vals[2], ""};
-    strcpy(v.Name, name);
-    int idx = findVectorIndexByName(name);
-    if (idx >= 0) vectorStorage[idx] = v;
-    else if (vectorCount < MAX_VECTORS) vectorStorage[vectorCount++] = v;
-    else printf("Vector storage full!\n");
     printf("Stored vector '%s': %.2f %.2f %.2f\n", v.Name, v.xMag, v.yMag, v.zMag);
 }
 
-// Command Parsing
-void parseTest() {
+//parse and commands
+void parseTest(void) {
     printf("Minimat> ");
-    fgets(userInput, 100, stdin);
+    if (!fgets(userInput, sizeof(userInput), stdin)) {
+        puts("Input error; quitting.");
+        quitProgram();
+        return;
+    }
     userInput[strcspn(userInput, "\n")] = '\0';
     char *input = trim(userInput);
-// Assignment
-if (strchr(input, '=') && (strchr(input, '+') || strchr(input, '-') || strchr(input, '*'))) {
-    char *lhs = trim(strtok(input, "="));
-    char *rhs = trim(strtok(NULL, ""));
-    if (!lhs || !rhs) return;
-    Vector res;
-    if (strchr(rhs, '+')) res = add(rhs);
-    else if (strchr(rhs, '-')) res = subtract(rhs);
-    else res = multiplyScalar(rhs);
-    strcpy(res.Name, lhs);
-    int idx = findVectorIndexByName(lhs);
-    if (idx >= 0) vectorStorage[idx] = res;
-    else if (vectorCount < MAX_VECTORS) vectorStorage[vectorCount++] = res;
-    printf("Result '%s': x=%.2f y=%.2f z=%.2f\n",
-    res.Name, res.xMag, res.yMag, res.zMag);
-    return;
- }
 
- // Direct operations
-    if (strchr(input, '+') || strchr(input, '-') || strchr(input, '*')) {
-    Vector res;
-    if (strchr(input, '+')) res = add(input);
-    else if (strchr(input, '-')) res = subtract(input);
-    else res = multiplyScalar(input);
-    printf("Result: x=%.2f y=%.2f z=%.2f\n",
-    res.xMag, res.yMag, res.zMag);
-    return;
-}
-// Display single vector
-if (strlen(input) == 1 && isalpha(input[0])) {
-    int idx = findVectorIndexByName(input);
-    if (idx >= 0) {
-        Vector v = vectorStorage[idx];
-        printf("%s = (%.2f, %.2f, %.2f)\n",
-        v.Name, v.xMag, v.yMag, v.zMag);
-    } else {
-    printf("Error: vector '%s' not found.\n", input);
+    //CSV commands
+    if (strncmp(input, "load ", 5) == 0) {
+        const char *fn = trim(input + 5);
+        if (fn[0] == '\0') { puts("Usage: load <file.csv>"); return; }
+        //clear current storage before loading
+        clearArray();
+        int rc = loadVectorsFromCSV(fn);
+        if (rc == 0) displayVector();
+        return;
     }
-    return;
+    if (strncmp(input, "save ", 5) == 0) {
+        const char *fn = trim(input + 5);
+        if (fn[0] == '\0') { puts("Usage: save <file.csv>"); return; }
+        saveVectorsToCSV(fn);
+        return;
+    }
+
+    //assignment
+    if (strchr(input, '=') && (strchr(input, '+') || strchr(input, '-') || strchr(input, '*'))) {
+        char *lhs = trim(strtok(input, "="));
+        char *rhs = trim(strtok(NULL, ""));
+        if (!lhs || !rhs) return;
+        Vector res = {0};
+        if (strchr(rhs, '+')) res = add(rhs);
+        else if (strchr(rhs, '-')) res = subtract(rhs);
+        else                      res = multiplyScalar(rhs);
+        strncpy(res.Name, lhs, sizeof(res.Name)-1);
+        res.Name[sizeof(res.Name)-1] = '\0';
+
+        int idx = findVectorIndexByName(res.Name);
+        if (idx >= 0) vectorStorage[idx] = res;
+        else {
+            if (vectorCount >= vectorCapacity) expandVectorStorage();
+            vectorStorage[vectorCount++] = res;
+        }
+        printf("Result '%s': x=%.2f y=%.2f z=%.2f\n", res.Name, res.xMag, res.yMag, res.zMag);
+        return;
+    }
+
+    //direct operations
+    if (strchr(input, '+') || strchr(input, '-') || strchr(input, '*')) {
+        Vector res = {0};
+        if (strchr(input, '+')) res = add(input);
+        else if (strchr(input, '-')) res = subtract(input);
+        else                         res = multiplyScalar(input);
+        printf("Result: x=%.2f y=%.2f z=%.2f\n", res.xMag, res.yMag, res.zMag);
+        return;
+    }
+
+    //display single vector by name
+    if (strlen(input) == 1 && isalpha((unsigned char)input[0])) {
+        int idx = findVectorIndexByName(input);
+        if (idx >= 0) {
+            Vector v = vectorStorage[idx];
+            printf("%s = (%.2f, %.2f, %.2f)\n", v.Name, v.xMag, v.yMag, v.zMag);
+        } else {
+            printf("Error: vector '%s' not found.\n", input);
+        }
+        return;
+    }
+
+    // Display all, clear, quit, or define new
+    if (strcmp(input, "display") == 0) {
+        displayVector();
+    } else if (strcmp(input, "clear") == 0) {
+        clearArray();
+    } else if (strcmp(input, "quit") == 0 || strcmp(input, "exit") == 0) {
+        printf("Quitting program...\n");
+        quitProgram();
+    } else if (strchr(input, '=') != NULL) {
+        // define vector: a = 1 2 3
+        newVector();
+    } else if (strlen(input) > 0) {
+        printf("Error: unrecognized command '%s'\n", input);
+    }
 }
-// Display all, clear, quit, or define new
-if (strcmp(input, "display") == 0) {
-    displayVector(0);
-} else if (strcmp(input, "clear") == 0) {
-    clearArray();
-} else if (strcmp(input, "quit") == 0) {
-    printf("Quitting program...\n");
-    exit(0);
-} else if (strchr(input, '=') != NULL) {
-    newVector(); // a = 1 2 3
-} else if (strlen(input) > 0) {
-    printf("Error: unrecognized command '%s'\n", input);
+
+//CSV I/O
+int loadVectorsFromCSV(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return -1;
+    }
+
+    clearArray(); //start fresh
+    char line[128];
+    while (fgets(line, sizeof(line), file)) {
+        if (line[0] == '\n' || line[0] == '#') continue;
+
+        Vector v;
+        memset(&v, 0, sizeof(v));
+
+        if (sscanf(line, " %19[^,],%lf,%lf,%lf",
+                   v.Name, &v.xMag, &v.yMag, &v.zMag) == 4) {
+            if (vectorCount >= vectorCapacity) expandVectorStorage();
+            vectorStorage[vectorCount++] = v;
+        }
+    }
+
+    fclose(file);
+    printf("Loaded %d vectors from %s\n", vectorCount, filename);
+    return 0;
 }
+
+int saveVectorsToCSV(const char *filename) {
+    FILE *file = fopen(filename, "w");
+    if (!file) {
+        perror("Error opening file for writing");
+        return -1;
+    }
+
+    fprintf(file, "Name,x,y,z\n");
+    for (int i = 0; i < vectorCount; i++) {
+        fprintf(file, "%s,%.6f,%.6f,%.6f\n",
+                vectorStorage[i].Name,
+                vectorStorage[i].xMag,
+                vectorStorage[i].yMag,
+                vectorStorage[i].zMag);
+    }
+
+    fclose(file);
+    printf("Saved %d vectors to %s\n", vectorCount, filename);
+    return 0;
 }
-// Help and Quit
-void printHelp() {
-    printf("Lab 4 Vector Program Help\n");
-    printf("========================\n");
+
+//Help
+void printHelp(void) {
+    printf("Lab Vector Program Help\n");
+    printf("=======================\n");
     printf("Usage: ./lab5main [-h]\n");
     printf("Commands:\n");
-    printf(" a = x y z → define vector a\n");
-    printf(" a = a + b → add vectors\n");
-    printf(" a = a - b → subtract vectors\n");
-    printf(" a = a * scalar → multiply by scalar\n");
-    printf(" display → list all vectors\n");
-    printf(" clear → clear all\n");
-    printf(" quit → exit program\n");
+    printf(" a = x y z           -> define vector a\n");
+    printf(" a = a + b           -> add vectors\n");
+    printf(" a = a - b           -> subtract vectors\n");
+    printf(" a = a * scalar      -> multiply by scalar\n");
+    printf(" display             -> list all vectors\n");
+    printf(" load <file.csv>     -> load vectors from CSV (Name,x,y,z)\n");
+    printf(" save <file.csv>     -> save vectors to CSV\n");
+    printf(" clear               -> clear all vectors\n");
+    printf(" quit/exit           -> exit program\n");
 }

@@ -1,54 +1,55 @@
+
 /**
  * Author: Andrew Gilpatrick
- * Assignment: Lab 4
- * Date: 09/30/2025
+ * Assignment: Lab 7
+ * Date: 10/27/2025
  * vector.h
  */
 
-
-
 #ifndef VECTOR_H
-#define VECTOR_H
+#define VECTOR_H     
+#include <stdio.h>
+
 typedef struct {
-    double xMag; //X Val
-    double yMag; //Y Val
-    double zMag; //Z Val
+    double xMag; 
+    double yMag;
+    double zMag; 
     char Name[20];
 } Vector;
 
-// storage
+//dynamic storage
 extern Vector *vectorStorage;
 extern int vectorCount;
 extern int vectorCapacity;
 
-
-// memory management
+//memory management
 void expandVectorStorage(void);
-void clearArray(void);
-void quitProgram(void):
+void clearArray(void);     
+void cleanupMemory(void);
+void quitProgram(void);
 
-//csv
+//CSV I/O
 int loadVectorsFromCSV(const char *filename);
 int saveVectorsToCSV(const char *filename);
 
-// lab 5 functions
-int getCommandCode();
-void printHelp();
+
+int getCommandCode(void);
+void printHelp(void);
 extern int currentCommand;
 extern int running;
-void newVector();
-void entryPoint();
-void helpFunction();
-void parseTest();
+void newVector(void);
+void entryPoint(void);
+void helpFunction(void);
+void parseTest(void);
 extern char charNames[100];
 extern char userInput[100];
 
-//Vector vectorList[10]; // Vector Storage Array
-void displayVector(); //display specific vector if possible
-void clearArray(); // Clear the vector storage array
-void quitProgram(); // Quit the calculator program
-Vector add(); // Vector add
-Vector subtract(); // Vector subtract
-Vector multiplyScalar(); // Vector multiply
 
-#endif
+Vector add(const char *expr);
+Vector subtract(const char *expr);
+Vector multiplyScalar(const char *expr);
+
+// Display
+void displayVector(void);
+
+#endif 

@@ -1,49 +1,31 @@
+
 /**
  * Author: Andrew Gilpatrick
- * Assignment: Lab 4
- * Date: 09/30/2025
+ * Assignment: Lab 7
+ * Date: 10/27/2025
  * lab5main.c
- * Compile: make sss
+ * Compile: gcc -o lab5main lab5main.c lab5controller.c gptcontroller.c
  */
 #include <stdio.h>
-#include "vector.h"
 #include <string.h>
+#include "vector.h"
+
 int main (int argc, char *argv[]){
- // Check for help flag
+    // Help flag
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-h") == 0) {
-        printHelp();
-        return 0; // exit after printing help
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            printHelp();
+            return 0;
         }
     }
-    int running = 1;
 
-// main loop
-    while(running){
+    printf("\nVector Calculator - Lab 5 (dynamic + CSV)\n");
+    printf("Type '-h' for help. Commands: display, load <file>, save <file>, clear, quit\n\n");
+
+    while (running) {
         parseTest();
-        switch(currentCommand){
-        case 1:
-            newVector();
-            break;
-        case 2:
-            add();
-            break;
-        case 3:
-            subtract();
-            break;
-        case 4:
-            multiplyScalar();
-            break;
-        case 5:
-            displayVector();
-            break;
-        case 6:
-            clearArray();
-            break;
-        case 7:
-            quitProgram();
-        }
     }
 
     cleanupMemory();
+    return 0;
 }
