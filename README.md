@@ -11,10 +11,34 @@
 
 ## Project Structure
 |-- Vector Lab
+
 |---- lab5controller.c
+
 |---- lab5main.c
+
 |---- vector.h
+
 |---- Makefile
+
+## Commands
+- a = x y z           -> define vector a
+- a = a + b           -> add vectors
+- a = a - b           -> subtract vectors
+- a = a * scalar      -> multiply by scalar
+- display             -> list all vectors
+- load <file.csv>     -> load vectors from CSV (Name,x,y,z)
+- <file.csv>    -> save vectors to CSV
+- clear         -> clear all vectors
+- quit          -> exit program
+
+## Build Commands
+- -h to display the help screen
+
+
+## Dynamic Memory
+- v2 uses malloc to allocate memory as you create/remove vectors rather than have a fixed size array
+
+
 
 
 ## Installation/Setup
